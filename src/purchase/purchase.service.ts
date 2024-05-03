@@ -56,14 +56,14 @@ export class PurchaseService {
             case 'payment_intent.succeeded':
                 await this.purchasesRepository.update(
                     { paymentId: payment.id },
-                    { paymentDate: Date.now(), status: PaymentStatus.SUCCEEDED }
+                    { paymentDate: new Date(), status: PaymentStatus.SUCCEEDED }
                 );
                 console.log(`PaymentIntent was successful`);
                 break;
             case 'payment_intent.payment_failed':
                 await this.purchasesRepository.update(
                     { paymentId: payment.id },
-                    { paymentDate: Date.now(), status: PaymentStatus.FAILED }
+                    { paymentDate: new Date(), status: PaymentStatus.FAILED }
                 );
                 console.log(`PaymentIntent failed`);
                 break;
