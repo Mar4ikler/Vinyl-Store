@@ -134,4 +134,9 @@ export class UserController {
     async logout(@Req() req: RequestWithAuthorization) {
         return await this.userService.logout(req);
     }
+
+    @Get()
+    hello() {
+        return 'hello';
+    }
 }
