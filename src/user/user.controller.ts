@@ -135,7 +135,7 @@ export class UserController {
         return await this.userService.logout(req);
     }
 
-    @Get()
+    @Get('hello')
     hello() {
         return 'hello';
     }
