@@ -11,6 +11,7 @@ import {
     Headers,
     UsePipes,
     RawBodyRequest,
+    Query,
 } from '@nestjs/common';
 import { PurchaseService } from './purchase.service';
 import { Roles } from '../decorators/roles.decorator';
@@ -28,7 +29,7 @@ export class PurchaseController {
     @Roles(UserRole.ADMIN, UserRole.USER)
     @UseGuards(JwtAuthGuard, RoleGuard)
     @Post()
-    async purchase(@Req() req: UserRequest, @Body() vinylId: number): Promise<Purchase> {
+    async purchase(@Req() req: UserRequest, @Query('vinylId') vinylId: number): Promise<Purchase> {
         logger.info('Create new purchase');
         return await this.purchaseService.create(+vinylId, +req.id);
     }

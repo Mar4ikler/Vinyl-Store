@@ -40,7 +40,7 @@ export class PurchaseService {
             event = this.stripeService.stripe.webhooks.constructEvent(
                 rawBody,
                 signature,
-                'whsec_9c57ae95b1fefb24caac62afe61d626faa35fdde92e0de795bbc3c3361c2b558'
+                'we_1PCLDyKujS7tkPiVyh5yKhyH'
             );
         } catch (err) {
             return { statusCode: 400, body: 'Webhook Error: ' + err.message };
