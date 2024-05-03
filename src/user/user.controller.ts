@@ -137,6 +137,6 @@ export class UserController {
 
     @Get('hello')
     hello() {
-        return 'hello';
+        return '<div>hello</div>';
     }
 }
