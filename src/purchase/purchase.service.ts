@@ -10,6 +10,7 @@ import { StripeService } from '../stripe/stripe.service';
 import { EmailNotificationService } from '../email/email.service';
 import Stripe from 'stripe';
 import { ConfigService } from '@nestjs/config';
+import { PaymentStatus } from '../types/payment-status.enum';
 
 @Injectable()
 export class PurchaseService {
@@ -19,8 +20,8 @@ export class PurchaseService {
         private readonly userService: UserService,
         private readonly vinylService: VinylService,
         private readonly stripeService: StripeService,
-        private readonly emailNotificationService: EmailNotificationService,    
-        private readonly configService: ConfigService,
+        private readonly emailNotificationService: EmailNotificationService,
+        private readonly configService: ConfigService
     ) {}
 
     async create(vinylId: number, userId: number): Promise<Purchase> {
@@ -48,14 +49,32 @@ export class PurchaseService {
             return { statusCode: 400, body: 'Webhook Error: ' + err.message };
         }
 
+        const payment = event.data.object as Stripe.PaymentIntent;
+        //const purchase = this.purchasesRepository.findOneBy({ paymentId: payment.id });
+
         switch (event.type) {
             case 'payment_intent.succeeded':
-                const paymentIntent = event.data.object as Stripe.PaymentIntent;
+                await this.purchasesRepository.update(
+                    { paymentId: payment.id },
+                    { paymentDate: Date.now(), status: PaymentStatus.SUCCEEDED }
+                );
                 console.log(`PaymentIntent was successful`);
                 break;
             case 'payment_intent.payment_failed':
-                const failedPaymentIntent = event.data.object as Stripe.PaymentIntent;
+                await this.purchasesRepository.update(
+                    { paymentId: payment.id },
+                    { paymentDate: Date.now(), status: PaymentStatus.FAILED }
+                );
                 console.log(`PaymentIntent failed`);
+                break;
+            case 'payment_intent.processing':
+                await this.purchasesRepository.update(
+                    { paymentId: payment.id },
+                    { status: PaymentStatus.PROCESSING }
+                );
+                console.log(`PaymentIntent failed`);
+                break;
+            case 'payment_intent.created':
                 break;
             default:
                 console.log(`Unhandled event type: ${event.type}`);
