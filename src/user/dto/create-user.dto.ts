@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsDate, IsDateString, IsEmail, IsNotEmpty, IsOptional, Length } from 'class-validator';
 
 export class CreateUserDto {
@@ -22,12 +22,12 @@ export class CreateUserDto {
     @Length(2, 20, { message: 'password must be from 2 to 20 symbols' })
     password: string;
 
-    @ApiProperty({ description: 'birthdate should be like yyyy-mm-dd' })
+    @ApiPropertyOptional({ description: 'birthdate should be like yyyy-mm-dd' })
     @IsOptional()
     @IsDateString()
     birthdate: Date;
 
-    @ApiProperty({ description: 'avatar must be from 2 to 20 symbols' })
+    @ApiPropertyOptional({ description: 'avatar must be from 2 to 20 symbols' })
     @IsOptional()
     @Length(2, 20, { message: 'avatar must be from 2 to 20 symbols' })
     avatar: string;

@@ -21,7 +21,17 @@ import { RoleGuard } from '../guards/role.guard';
 import { UserRequest } from '../interfaces/user-request';
 import { logger } from '../logger/logger.config';
 import { Purchase } from './entities/purchase.entity';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiForbiddenResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
+@ApiTags('Purchase Controller')
 @Controller('purchase')
 export class PurchaseController {
     constructor(private readonly purchaseService: PurchaseService) {}
@@ -29,6 +39,16 @@ export class PurchaseController {
     @Roles(UserRole.ADMIN, UserRole.USER)
     @UseGuards(JwtAuthGuard, RoleGuard)
     @Post()
+    @ApiBearerAuth('Bearer Auth')
+    @ApiOperation({
+        summary: 'Create new purchase',
+        description:
+            'This endpoint requires a valid JWT token. The role of the user is determined by the token.',
+    })
+    @ApiOkResponse({ description: 'Purchase created' })
+    @ApiUnauthorizedResponse({ description: 'Authentication required' })
+    @ApiForbiddenResponse({ description: 'Invalid token' })
+    @ApiBadRequestResponse({ description: 'This vinyl does not exists' })
     async purchase(@Req() req: UserRequest, @Query('vinylId') vinylId: number): Promise<Purchase> {
         const purchase = await this.purchaseService.create(+vinylId, +req.id);
         logger.info(`Create new purchase with id ${purchase.id}`);
