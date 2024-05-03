@@ -9,6 +9,7 @@ import { VinylService } from '../vinyl/vinyl.service';
 import { StripeService } from '../stripe/stripe.service';
 import { EmailNotificationService } from '../email/email.service';
 import Stripe from 'stripe';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PurchaseService {
@@ -18,7 +19,8 @@ export class PurchaseService {
         private readonly userService: UserService,
         private readonly vinylService: VinylService,
         private readonly stripeService: StripeService,
-        private readonly emailNotificationService: EmailNotificationService
+        private readonly emailNotificationService: EmailNotificationService,    
+        private readonly configService: ConfigService,
     ) {}
 
     async create(vinylId: number, userId: number): Promise<Purchase> {
@@ -40,7 +42,7 @@ export class PurchaseService {
             event = this.stripeService.stripe.webhooks.constructEvent(
                 rawBody,
                 signature,
-                'we_1PCLDyKujS7tkPiVyh5yKhyH'
+                this.configService.get('STRIPE_WEBHOOK_SECRET')
             );
         } catch (err) {
             return { statusCode: 400, body: 'Webhook Error: ' + err.message };
