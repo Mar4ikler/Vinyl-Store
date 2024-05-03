@@ -1,23 +1,20 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreatePurchaseDto } from './dto/create-purchase.dto';
-import { UpdatePurchaseDto } from './dto/update-purchase.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Purchase } from './entities/purchase.entity';
 import { Repository } from 'typeorm';
-import { UserService } from '../user/user.service';
 import { VinylService } from '../vinyl/vinyl.service';
 import { StripeService } from '../stripe/stripe.service';
 import { EmailNotificationService } from '../email/email.service';
 import Stripe from 'stripe';
 import { ConfigService } from '@nestjs/config';
 import { PaymentStatus } from '../types/payment-status.enum';
+import { EmailNotificationParams } from '../interfaces/email-notification-params';
 
 @Injectable()
 export class PurchaseService {
     constructor(
         @InjectRepository(Purchase)
         private purchasesRepository: Repository<Purchase>,
-        private readonly userService: UserService,
         private readonly vinylService: VinylService,
         private readonly stripeService: StripeService,
         private readonly emailNotificationService: EmailNotificationService,
@@ -50,7 +47,16 @@ export class PurchaseService {
         }
 
         const payment = event.data.object as Stripe.PaymentIntent;
-        //const purchase = this.purchasesRepository.findOneBy({ paymentId: payment.id });
+
+        const purchase = await this.purchasesRepository.findOne({
+            where: { paymentId: payment.id },
+            relations: {
+                user: true,
+            },
+        });
+
+        const userEmail = purchase.user.email;
+        let emailParams: EmailNotificationParams;
 
         switch (event.type) {
             case 'payment_intent.succeeded':
@@ -58,6 +64,12 @@ export class PurchaseService {
                     { paymentId: payment.id },
                     { paymentDate: new Date(), status: PaymentStatus.SUCCEEDED }
                 );
+                emailParams = {
+                    userEmail: userEmail,
+                    subject: 'Payment status updated',
+                    message: `Status of your payment with id ${payment.id} now is succeeded`,
+                };
+                this.emailNotificationService.sendEmailNotification(emailParams);
                 console.log(`PaymentIntent was successful`);
                 break;
             case 'payment_intent.payment_failed':
@@ -65,6 +77,12 @@ export class PurchaseService {
                     { paymentId: payment.id },
                     { paymentDate: new Date(), status: PaymentStatus.FAILED }
                 );
+                emailParams = {
+                    userEmail: userEmail,
+                    subject: 'Payment status updated',
+                    message: `Status of your payment with id ${payment.id} now is failed`,
+                };
+                this.emailNotificationService.sendEmailNotification(emailParams);
                 console.log(`PaymentIntent failed`);
                 break;
             case 'payment_intent.processing':
@@ -72,9 +90,21 @@ export class PurchaseService {
                     { paymentId: payment.id },
                     { status: PaymentStatus.PROCESSING }
                 );
+                emailParams = {
+                    userEmail: userEmail,
+                    subject: 'Payment status updated',
+                    message: `Status of your payment with id ${payment.id} now is processing`,
+                };
+                this.emailNotificationService.sendEmailNotification(emailParams);
                 console.log(`PaymentIntent failed`);
                 break;
             case 'payment_intent.created':
+                emailParams = {
+                    userEmail: userEmail,
+                    subject: 'Payment status updated',
+                    message: `Status of your payment with id ${payment.id} now is created`,
+                };
+                this.emailNotificationService.sendEmailNotification(emailParams);
                 break;
             default:
                 console.log(`Unhandled event type: ${event.type}`);
