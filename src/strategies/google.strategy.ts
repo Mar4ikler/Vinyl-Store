@@ -9,7 +9,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         super({
             clientID: configService.get('GOOGLE_CLIENT_ID'),
             clientSecret: configService.get('GOOGLE_CLIENT_SECRET'),
-            callbackURL: 'http://localhost:4000/user/redirect',
+            callbackURL: configService.get('GOOGLE_REDIRECT_URL'),
             scope: ['email', 'profile'],
         });
     }
