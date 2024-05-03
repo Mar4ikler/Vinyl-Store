@@ -22,16 +22,18 @@ export class ReviewController {
         @Req() req: UserRequest,
         @Body() createReviewDto: CreateReviewDto
     ): Promise<Review> {
-        logger.info('Create review');
-        return await this.reviewService.create(+req.id, createReviewDto);
+        const newReview = await this.reviewService.create(+req.id, createReviewDto);
+        logger.info(`Create review with id ${newReview.id}`);
+        return newReview;
     }
 
     @Roles(UserRole.ADMIN)
     @UseGuards(JwtAuthGuard, RoleGuard)
     @Delete(':id')
     async remove(@Param('id') id: number): Promise<number> {
-        logger.info('Delete review');
-        return await this.reviewService.remove(+id);
+        const deletedReviewId = await this.reviewService.remove(+id);
+        logger.info(`Delete review with id ${deletedReviewId}`);
+        return deletedReviewId;
     }
 
     @Roles(UserRole.ADMIN, UserRole.USER)

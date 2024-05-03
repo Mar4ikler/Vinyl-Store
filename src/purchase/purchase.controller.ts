@@ -30,8 +30,9 @@ export class PurchaseController {
     @UseGuards(JwtAuthGuard, RoleGuard)
     @Post()
     async purchase(@Req() req: UserRequest, @Query('vinylId') vinylId: number): Promise<Purchase> {
-        logger.info('Create new purchase');
-        return await this.purchaseService.create(+vinylId, +req.id);
+        const purchase = await this.purchaseService.create(+vinylId, +req.id);
+        logger.info(`Create new purchase with id ${purchase.id}`);
+        return purchase;
     }
 
     @Post('webhook')

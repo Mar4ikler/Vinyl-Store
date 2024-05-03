@@ -29,24 +29,27 @@ export class VinylController {
     @UseGuards(JwtAuthGuard, RoleGuard)
     @Post()
     async create(@Body() createVinylDto: CreateVinylDto): Promise<Vinyl> {
-        logger.info('Create new vinyl');
-        return await this.vinylService.create(createVinylDto);
+        const newVinyl = await this.vinylService.create(createVinylDto);
+        logger.info(`Create new vinyl with id ${newVinyl.id}`);
+        return newVinyl;
     }
 
     @Roles(UserRole.ADMIN)
     @UseGuards(JwtAuthGuard, RoleGuard)
     @Patch(':id')
     async update(@Param('id') id: number, @Body() updateVinylDto: UpdateVinylDto): Promise<Vinyl> {
-        logger.info('Update vinyl');
-        return await this.vinylService.update(+id, updateVinylDto);
+        const vinyl = await this.vinylService.update(+id, updateVinylDto);
+        logger.info(`Update vinyl with id ${vinyl.id}`);
+        return vinyl;
     }
 
     @Roles(UserRole.ADMIN)
     @UseGuards(JwtAuthGuard, RoleGuard)
     @Delete(':id')
     async remove(@Param('id') id: number): Promise<number> {
-        logger.info('Delete vinyl');
-        return await this.vinylService.remove(+id);
+        const deletedVinylId = await this.vinylService.remove(+id);
+        logger.info(`Delete vinyl with id ${deletedVinylId}`);
+        return deletedVinylId;
     }
 
     @Get()

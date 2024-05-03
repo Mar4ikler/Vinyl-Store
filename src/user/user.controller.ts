@@ -51,7 +51,6 @@ export class UserController {
         return await this.userService.googleLogin(req);
     }
 
-    // TODO purchases
     @Roles(UserRole.ADMIN, UserRole.USER)
     @UseGuards(JwtAuthGuard, RoleGuard)
     @Get('profile')
@@ -75,8 +74,9 @@ export class UserController {
     @ApiOkResponse({ description: 'Register success' })
     @ApiBadRequestResponse({ description: 'User with this email already exists' })
     async register(@Body() createUserDto: CreateUserDto): Promise<User> {
-        logger.info('Register new user');
-        return await this.userService.register(createUserDto);
+        const newUser = await this.userService.register(createUserDto);
+        logger.info(`Register new user with id ${newUser.id}`);
+        return newUser;
     }
 
     @Post('login')
@@ -103,7 +103,7 @@ export class UserController {
     @ApiForbiddenResponse({ description: 'Invalid token' })
     async update(@Req() req: UserRequest, @Body() updateUserDto: UpdateUserDto): Promise<User> {
         const user = await this.userService.update(req.id, updateUserDto);
-        logger.info('Update user');
+        logger.info(`Update user with id ${user.id}`);
         return user;
     }
 
@@ -121,8 +121,9 @@ export class UserController {
     @ApiForbiddenResponse({ description: 'Invalid token' })
     @ApiBadRequestResponse({ description: 'This user does not exist' })
     async remove(@Req() req: UserRequest): Promise<number> {
-        logger.info('Delete user');
-        return await this.userService.remove(req.id);
+        const id = await this.userService.remove(req.id);
+        logger.info(`Delete user with id ${id}`);
+        return id;
     }
 
     @Post('logout')

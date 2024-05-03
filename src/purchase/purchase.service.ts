@@ -9,6 +9,7 @@ import Stripe from 'stripe';
 import { ConfigService } from '@nestjs/config';
 import { PaymentStatus } from '../types/payment-status.enum';
 import { EmailNotificationParams } from '../interfaces/email-notification-params';
+import { logger } from '../logger/logger.config';
 
 @Injectable()
 export class PurchaseService {
@@ -70,7 +71,7 @@ export class PurchaseService {
                     message: `Status of your payment with id ${payment.id} now is succeeded`,
                 };
                 this.emailNotificationService.sendEmailNotification(emailParams);
-                console.log(`PaymentIntent was successful`);
+                logger.info(`Status of your payment with id ${payment.id} set to succeeded`);
                 break;
             case 'payment_intent.payment_failed':
                 await this.purchasesRepository.update(
@@ -83,7 +84,7 @@ export class PurchaseService {
                     message: `Status of your payment with id ${payment.id} now is failed`,
                 };
                 this.emailNotificationService.sendEmailNotification(emailParams);
-                console.log(`PaymentIntent failed`);
+                logger.info(`Status of your payment with id ${payment.id} set to failed`);
                 break;
             case 'payment_intent.processing':
                 await this.purchasesRepository.update(
@@ -96,7 +97,7 @@ export class PurchaseService {
                     message: `Status of your payment with id ${payment.id} now is processing`,
                 };
                 this.emailNotificationService.sendEmailNotification(emailParams);
-                console.log(`PaymentIntent failed`);
+                logger.info(`Status of your payment with id ${payment.id} set to processing`);
                 break;
             case 'payment_intent.created':
                 emailParams = {
@@ -105,9 +106,10 @@ export class PurchaseService {
                     message: `Status of your payment with id ${payment.id} now is created`,
                 };
                 this.emailNotificationService.sendEmailNotification(emailParams);
+                logger.info(`Status of your payment with id ${payment.id} set to created`);
                 break;
             default:
-                console.log(`Unhandled event type: ${event.type}`);
+                logger.info(`Unhandled event type: ${event.type}`);
         }
 
         return { statusCode: 200 };
