@@ -7,16 +7,21 @@ import { Like, Raw, Repository } from 'typeorm';
 import { VinylResponse } from '../interfaces/vinyl-response';
 import { FindVinylDto } from './dto/find-vinyl.dto';
 import { StripeService } from '../stripe/stripe.service';
+import { BotService } from '../bot/bot.service';
 
 @Injectable()
 export class VinylService {
     constructor(
         @InjectRepository(Vinyl)
-        private vinylsRepository: Repository<Vinyl>
+        private vinylsRepository: Repository<Vinyl>,
+        private botService: BotService
     ) {}
 
     async create(createVinylDto: CreateVinylDto): Promise<Vinyl> {
         const newVinyl = await this.vinylsRepository.save({ ...createVinylDto });
+        this.botService.sendMessageToChannel(
+            `A new vinyl record ${newVinyl.name} has appeared in our store, hurry up and buy it for only $${newVinyl.price}`
+        );
         return newVinyl;
     }
 

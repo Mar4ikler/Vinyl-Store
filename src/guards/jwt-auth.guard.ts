@@ -6,12 +6,9 @@ import {
     Injectable,
     UnauthorizedException,
 } from '@nestjs/common';
-import { VerifyErrors, verify } from 'jsonwebtoken';
+import { verify } from 'jsonwebtoken';
 import { DecodedToken } from '../interfaces/decoded-token';
 import { ConfigService } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../user/entities/user.entity';
-import { Repository } from 'typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { UserService } from '../user/user.service';
@@ -20,8 +17,7 @@ import { UserService } from '../user/user.service';
 export class JwtAuthGuard implements CanActivate {
     constructor(
         private readonly configService: ConfigService,
-        @InjectRepository(User)
-        private usersRepository: Repository<User>,
+        private userService: UserService,
         @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) {}
 
@@ -40,7 +36,7 @@ export class JwtAuthGuard implements CanActivate {
                 this.configService.get('JWT_ACCESS_SECRET')
             )) as DecodedToken;
 
-            const user = await this.usersRepository.findOneBy({ id: +decoded?.sub });
+            const user = await this.userService.findById(+decoded?.sub);
             if (!user) throw new ForbiddenException('Invalid token');
 
             req.id = +decoded?.sub;

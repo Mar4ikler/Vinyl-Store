@@ -3,15 +3,12 @@ import { VinylService } from './vinyl.service';
 import { VinylController } from './vinyl.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Vinyl } from './entities/vinyl.entity';
-import { UserService } from '../user/user.service';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { User } from '../user/entities/user.entity';
-import { StripeModule } from '../stripe/stripe.module';
+import { BotService } from '../bot/bot.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Vinyl, User])],
+  imports: [TypeOrmModule.forFeature([Vinyl])],
   controllers: [VinylController],
-  providers: [VinylService],
+  providers: [VinylService, BotService],
   exports: [VinylService]
 })
 export class VinylModule {}
