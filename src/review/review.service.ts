@@ -5,15 +5,20 @@ import { Review } from './entities/review.entity';
 import { Repository } from 'typeorm';
 import { FindReviewDto } from './dto/find-review';
 import { ReviewResponse } from '../interfaces/review-response';
+import { Vinyl } from '../vinyl/entities/vinyl.entity';
+import { VinylService } from '../vinyl/vinyl.service';
 
 @Injectable()
 export class ReviewService {
     constructor(
         @InjectRepository(Review)
-        private reviewsRepository: Repository<Review>
+        private reviewsRepository: Repository<Review>,
+        private vinylService: VinylService
     ) {}
 
     async create(userId: number, createReviewDto: CreateReviewDto): Promise<Review> {
+        const vinyl = await this.vinylService.findById(createReviewDto.vinylId);
+        if (!vinyl) throw new BadRequestException('This vinyl does not exist')
         const newReview = await this.reviewsRepository.save({
             ...createReviewDto,
             authorId: userId,

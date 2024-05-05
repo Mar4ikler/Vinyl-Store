@@ -6,6 +6,7 @@ import { GoogleAuthGuard } from '../guards/google-auth.guard';
 import {
     ApiBadRequestResponse,
     ApiBearerAuth,
+    ApiCreatedResponse,
     ApiExcludeEndpoint,
     ApiForbiddenResponse,
     ApiOkResponse,
@@ -61,7 +62,7 @@ export class UserController {
     @ApiOperation({
         summary: 'Register new user',
     })
-    @ApiOkResponse({ description: 'Register success' })
+    @ApiCreatedResponse({ description: 'Register success' })
     @ApiBadRequestResponse({ description: 'User with this email already exists' })
     async register(@Body() createUserDto: CreateUserDto): Promise<User> {
         const newUser = await this.userService.register(createUserDto);
@@ -73,7 +74,7 @@ export class UserController {
     @ApiOperation({
         summary: 'Login user',
     })
-    @ApiOkResponse({ description: 'Login success' })
+    @ApiCreatedResponse({ description: 'Login success' })
     @ApiBadRequestResponse({ description: 'Incorrent email or password' })
     async login(@Body() loginUserDto: LoginUserDto): Promise<string> {
         return await this.userService.login(loginUserDto);
@@ -116,11 +117,14 @@ export class UserController {
         return id;
     }
 
+    @Roles(UserRole.ADMIN, UserRole.USER)
+    @UseGuards(JwtAuthGuard, RoleGuard)
     @Post('logout')
     @ApiOperation({
         summary: 'Logout user',
     })
-    @ApiOkResponse({ description: 'Logout success' })
+    @ApiBearerAuth('Bearer Auth')
+    @ApiCreatedResponse({ description: 'Logout success' })
     @ApiForbiddenResponse({ description: 'Invalid token' })
     async logout(@Req() req: RequestWithAuthorization) {
         return await this.userService.logout(req);

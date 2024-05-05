@@ -23,6 +23,7 @@ import { logger } from '../logger/logger.config';
 import {
     ApiBadRequestResponse,
     ApiBearerAuth,
+    ApiCreatedResponse,
     ApiForbiddenResponse,
     ApiOkResponse,
     ApiOperation,
@@ -44,7 +45,7 @@ export class VinylController {
         description:
             'This endpoint requires a valid JWT token. The role of the user is determined by the token.',
     })
-    @ApiOkResponse({ description: 'Vinyl created' })
+    @ApiCreatedResponse({ description: 'Vinyl created' })
     @ApiUnauthorizedResponse({ description: 'Authentication required' })
     @ApiForbiddenResponse({ description: 'Invalid token' })
     async create(@Body() createVinylDto: CreateVinylDto): Promise<Vinyl> {
@@ -65,6 +66,7 @@ export class VinylController {
     @ApiOkResponse({ description: 'Vinyl was updated' })
     @ApiUnauthorizedResponse({ description: 'Authentication required' })
     @ApiForbiddenResponse({ description: 'Invalid token' })
+    @ApiBadRequestResponse({ description: 'This vinyl does not exist' })
     async update(@Param('id') id: number, @Body() updateVinylDto: UpdateVinylDto): Promise<Vinyl> {
         const vinyl = await this.vinylService.update(+id, updateVinylDto);
         logger.info(`Update vinyl with id ${vinyl.id}`);

@@ -26,7 +26,8 @@ export class VinylService {
     }
 
     async update(id: number, updateVinylDto: UpdateVinylDto): Promise<Vinyl> {
-        await this.vinylsRepository.update(id, updateVinylDto);
+        const updateResult = await this.vinylsRepository.update(id, updateVinylDto);
+        if (!updateResult.affected) throw new BadRequestException('This vinyl does not exist');
         return this.vinylsRepository.findOne({ where: { id } });
     }
 

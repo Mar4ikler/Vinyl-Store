@@ -24,9 +24,9 @@ import { Purchase } from './entities/purchase.entity';
 import {
     ApiBadRequestResponse,
     ApiBearerAuth,
+    ApiCreatedResponse,
     ApiExcludeEndpoint,
     ApiForbiddenResponse,
-    ApiOkResponse,
     ApiOperation,
     ApiTags,
     ApiUnauthorizedResponse,
@@ -46,7 +46,7 @@ export class PurchaseController {
         description:
             'This endpoint requires a valid JWT token. The role of the user is determined by the token.',
     })
-    @ApiOkResponse({ description: 'Purchase created' })
+    @ApiCreatedResponse({ description: 'Purchase created' })
     @ApiUnauthorizedResponse({ description: 'Authentication required' })
     @ApiForbiddenResponse({ description: 'Invalid token' })
     @ApiBadRequestResponse({ description: 'This vinyl does not exists' })

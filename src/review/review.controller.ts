@@ -11,7 +11,9 @@ import { FindReviewDto } from './dto/find-review';
 import { ReviewResponse } from '../interfaces/review-response';
 import { logger } from '../logger/logger.config';
 import {
+    ApiBadRequestResponse,
     ApiBearerAuth,
+    ApiCreatedResponse,
     ApiForbiddenResponse,
     ApiOkResponse,
     ApiOperation,
@@ -33,9 +35,10 @@ export class ReviewController {
         description:
             'This endpoint requires a valid JWT token. The role of the user is determined by the token.',
     })
-    @ApiOkResponse({ description: 'Review created' })
+    @ApiCreatedResponse({ description: 'Review created' })
     @ApiUnauthorizedResponse({ description: 'Authentication required' })
     @ApiForbiddenResponse({ description: 'Invalid token' })
+    @ApiBadRequestResponse({ description: 'This vinyl does not exist' })
     async create(
         @Req() req: UserRequest,
         @Body() createReviewDto: CreateReviewDto
@@ -57,6 +60,7 @@ export class ReviewController {
     @ApiOkResponse({ description: 'Review deleted' })
     @ApiUnauthorizedResponse({ description: 'Authentication required' })
     @ApiForbiddenResponse({ description: 'Invalid token' })
+    @ApiBadRequestResponse({ description: 'This review does not exist' })
     async remove(@Param('id') id: number): Promise<number> {
         const deletedReviewId = await this.reviewService.remove(+id);
         logger.info(`Delete review with id ${deletedReviewId}`);
