@@ -69,7 +69,7 @@ export class ReviewController {
 
     @Roles(UserRole.ADMIN, UserRole.USER)
     @UseGuards(JwtAuthGuard, RoleGuard)
-    @Post()
+    @Post('find')
     @ApiBearerAuth('Bearer Auth')
     @ApiOperation({
         summary: 'Find vinyl reviews',
