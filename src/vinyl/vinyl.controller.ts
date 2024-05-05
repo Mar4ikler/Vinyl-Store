@@ -30,6 +30,7 @@ import {
     ApiTags,
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { GuestFindVinylDto } from './dto/guest-find-vinyl.dto';
 
 @ApiTags('Vinyl Controller')
 @Controller('vinyl')
@@ -92,18 +93,18 @@ export class VinylController {
         return deletedVinylId;
     }
 
-    @Post('/guest-search')
+    @Post('/guest-find')
     @ApiOperation({
         summary: 'Find vinyls',
     })
     @ApiCreatedResponse({ description: 'Vinyls was found' })
-    async find(@Body() findVinylDto: Pick<FindVinylDto, 'take' | 'skip'>): Promise<VinylResponse> {
+    async find(@Body() findVinylDto: GuestFindVinylDto): Promise<VinylResponse> {
         return await this.vinylService.find(+findVinylDto.take, +findVinylDto.skip);
     }
 
     @Roles(UserRole.ADMIN, UserRole.USER)
     @UseGuards(JwtAuthGuard, RoleGuard)
-    @Post('/search')
+    @Post('/find')
     @ApiBearerAuth('Bearer Auth')
     @ApiOperation({
         summary: 'Find vinyls with sort and filter',

@@ -122,6 +122,8 @@ export class UserController {
     @Post('logout')
     @ApiOperation({
         summary: 'Logout user',
+        description:
+            'This endpoint requires a valid JWT token. The role of the user is determined by the token.',
     })
     @ApiBearerAuth('Bearer Auth')
     @ApiCreatedResponse({ description: 'Logout success' })
