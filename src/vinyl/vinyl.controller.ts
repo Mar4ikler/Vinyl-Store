@@ -99,7 +99,6 @@ export class VinylController {
         return await this.vinylService.find(+findVinylDto.take, +findVinylDto.skip);
     }
 
-    //TODO reviews score
     @Roles(UserRole.ADMIN, UserRole.USER)
     @UseGuards(JwtAuthGuard, RoleGuard)
     @Get('/search')

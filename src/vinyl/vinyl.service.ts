@@ -6,8 +6,8 @@ import { Vinyl } from './entities/vinyl.entity';
 import { Like, Raw, Repository } from 'typeorm';
 import { VinylResponse } from '../interfaces/vinyl-response';
 import { FindVinylDto } from './dto/find-vinyl.dto';
-import { StripeService } from '../stripe/stripe.service';
 import { BotService } from '../bot/bot.service';
+import { VinylResponseWithReviews } from '../interfaces/vinyl-response-with-reviews';
 
 @Injectable()
 export class VinylService {
@@ -36,11 +36,18 @@ export class VinylService {
         return id;
     }
 
-    async find(take: number, skip: number): Promise<VinylResponse> {
-        const vinyls = await this.vinylsRepository.find({
-            take: take,
-            skip: skip,
-        });
+    async find(take: number, skip: number): Promise<VinylResponseWithReviews> {
+        const rawQuery = `select distinct 
+        v.name,
+        v."authorName",
+        v.description,
+        v.price,
+        (select r.comment from reviews r where v.id = r."vinylId" order by "creationDate" desc limit 1) as latestComment,
+        round((select avg(r.score) from reviews r where v.id = r."vinylId" group by r."vinylId"), 2) as averageScore
+       from vinyls v 
+        limit ${take} offset ${skip}`;
+
+        const vinyls = await this.vinylsRepository.manager.query(rawQuery);
 
         const count: number = await this.vinylsRepository.count();
 

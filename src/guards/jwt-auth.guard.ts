@@ -28,7 +28,7 @@ export class JwtAuthGuard implements CanActivate {
         if (!token) throw new UnauthorizedException('Authentication required');
 
         const userId = await this.cacheManager.get(token);
-        //if(!userId) throw new ForbiddenException('Invalid token');
+        if(!userId) throw new ForbiddenException('Invalid token');
 
         try {
             const decoded: DecodedToken = (await verify(
