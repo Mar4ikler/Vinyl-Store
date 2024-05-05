@@ -92,25 +92,25 @@ export class VinylController {
         return deletedVinylId;
     }
 
-    @Get()
+    @Post('/guest-search')
     @ApiOperation({
         summary: 'Find vinyls',
     })
-    @ApiOkResponse({ description: 'Vinyls was found' })
+    @ApiCreatedResponse({ description: 'Vinyls was found' })
     async find(@Body() findVinylDto: Pick<FindVinylDto, 'take' | 'skip'>): Promise<VinylResponse> {
         return await this.vinylService.find(+findVinylDto.take, +findVinylDto.skip);
     }
 
     @Roles(UserRole.ADMIN, UserRole.USER)
     @UseGuards(JwtAuthGuard, RoleGuard)
-    @Get('/search')
+    @Post('/search')
     @ApiBearerAuth('Bearer Auth')
     @ApiOperation({
         summary: 'Find vinyls with sort and filter',
         description:
             'This endpoint requires a valid JWT token. The role of the user is determined by the token.',
     })
-    @ApiOkResponse({ description: 'Vinyls was found' })
+    @ApiCreatedResponse({ description: 'Vinyls was found' })
     @ApiUnauthorizedResponse({ description: 'Authentication required' })
     @ApiForbiddenResponse({ description: 'Invalid token' })
     async findUniversal(@Body() findVinylDto: FindVinylDto): Promise<VinylResponse> {

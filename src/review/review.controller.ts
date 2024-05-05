@@ -69,14 +69,14 @@ export class ReviewController {
 
     @Roles(UserRole.ADMIN, UserRole.USER)
     @UseGuards(JwtAuthGuard, RoleGuard)
-    @Get()
+    @Post()
     @ApiBearerAuth('Bearer Auth')
     @ApiOperation({
         summary: 'Find vinyl reviews',
         description:
             'This endpoint requires a valid JWT token. The role of the user is determined by the token.',
     })
-    @ApiOkResponse({ description: 'Reviews was found' })
+    @ApiCreatedResponse({ description: 'Reviews was found' })
     @ApiUnauthorizedResponse({ description: 'Authentication required' })
     @ApiForbiddenResponse({ description: 'Invalid token' })
     async find(@Body() findReviewDto: FindReviewDto): Promise<ReviewResponse> {
