@@ -6,6 +6,7 @@ import { GoogleAuthGuard } from '../guards/google-auth.guard';
 import {
     ApiBadRequestResponse,
     ApiBearerAuth,
+    ApiExcludeEndpoint,
     ApiForbiddenResponse,
     ApiOkResponse,
     ApiOperation,
@@ -30,23 +31,12 @@ export class UserController {
 
     @Get()
     @UseGuards(GoogleAuthGuard)
-    @ApiOperation({
-        summary: 'Login user by Google',
-        description: 'Redirects the user to Google for login',
-    })
-    @ApiResponse({
-        status: 302,
-        description: 'Redirects to Google for login',
-    })
+    @ApiExcludeEndpoint()
     async googleAuth(@Req() req) {}
 
     @Get('redirect')
     @UseGuards(GoogleAuthGuard)
-    @ApiOperation({
-        summary: 'Google login callback',
-        description: 'Handles the callback from Google after login',
-    })
-    @ApiOkResponse({ description: 'User successfully login' })
+    @ApiExcludeEndpoint()
     async googleAuthRedirect(@Req() req): Promise<string> {
         return await this.userService.googleLogin(req);
     }

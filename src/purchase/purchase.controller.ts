@@ -24,6 +24,7 @@ import { Purchase } from './entities/purchase.entity';
 import {
     ApiBadRequestResponse,
     ApiBearerAuth,
+    ApiExcludeEndpoint,
     ApiForbiddenResponse,
     ApiOkResponse,
     ApiOperation,
@@ -56,6 +57,7 @@ export class PurchaseController {
     }
 
     @Post('webhook')
+    @ApiExcludeEndpoint()
     async handleStripeWebhook(
         @Req() req: RawBodyRequest<Request>,
         @Headers('stripe-signature') signature: string
