@@ -33,8 +33,8 @@ export class ReviewService {
     }
 
     async find(findReviewDto: FindReviewDto): Promise<ReviewResponse> {
-        const take = +findReviewDto.take ?? 50;
-        const skip = +findReviewDto.skip ?? 0;
+        const take = +findReviewDto.take;
+        const skip = +findReviewDto.skip;
         const vinylId = +findReviewDto.vinylId;
 
         const reviews = await this.reviewsRepository.find({

@@ -39,9 +39,9 @@ export class VinylService {
     }
 
     async find(findVinylDto: GuestFindVinylDto): Promise<VinylResponseWithReviews> {
-        const take = +findVinylDto.take ?? 50;
-        const skip = +findVinylDto.skip ?? 0; 
-        
+        const take = +findVinylDto.take;
+        const skip = +findVinylDto.skip; 
+
         const rawQuery = `select distinct 
         v.name,
         v."authorName",
@@ -67,8 +67,8 @@ export class VinylService {
     }
 
     async findUniversal(findVinylDto: FindVinylDto): Promise<VinylResponse> {
-        const take = +findVinylDto.take ?? 50;
-        const skip = +findVinylDto.skip ?? 0;
+        const take = +findVinylDto.take;
+        const skip = +findVinylDto.skip;
         const filterString = findVinylDto.filterString;
         const sortParam = findVinylDto.sortParam;
         const sortOption = findVinylDto.sortOption;
