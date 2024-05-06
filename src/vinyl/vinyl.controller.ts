@@ -99,7 +99,7 @@ export class VinylController {
     })
     @ApiCreatedResponse({ description: 'Vinyls was found' })
     async find(@Body() findVinylDto: GuestFindVinylDto): Promise<VinylResponse> {
-        return await this.vinylService.find(+findVinylDto.take, +findVinylDto.skip);
+        return await this.vinylService.find(findVinylDto);
     }
 
     @Roles(UserRole.ADMIN, UserRole.USER)

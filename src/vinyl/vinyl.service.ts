@@ -8,6 +8,7 @@ import { VinylResponse } from '../interfaces/vinyl-response';
 import { FindVinylDto } from './dto/find-vinyl.dto';
 import { BotService } from '../bot/bot.service';
 import { VinylResponseWithReviews } from '../interfaces/vinyl-response-with-reviews';
+import { GuestFindVinylDto } from './dto/guest-find-vinyl.dto';
 
 @Injectable()
 export class VinylService {
@@ -37,7 +38,10 @@ export class VinylService {
         return id;
     }
 
-    async find(take: number, skip: number): Promise<VinylResponseWithReviews> {
+    async find(findVinylDto: GuestFindVinylDto): Promise<VinylResponseWithReviews> {
+        const take = +findVinylDto.take ?? 50;
+        const skip = +findVinylDto.skip ?? 0; 
+        
         const rawQuery = `select distinct 
         v.name,
         v."authorName",
@@ -63,8 +67,8 @@ export class VinylService {
     }
 
     async findUniversal(findVinylDto: FindVinylDto): Promise<VinylResponse> {
-        const take = +findVinylDto.take;
-        const skip = +findVinylDto.skip;
+        const take = +findVinylDto.take ?? 50;
+        const skip = +findVinylDto.skip ?? 0;
         const filterString = findVinylDto.filterString;
         const sortParam = findVinylDto.sortParam;
         const sortOption = findVinylDto.sortOption;

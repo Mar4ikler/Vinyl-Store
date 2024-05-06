@@ -15,6 +15,7 @@ import { CreateVinylDto } from './dto/create-vinyl.dto';
 import { UpdateVinylDto } from './dto/update-vinyl.dto';
 import { VinylResponse } from '../interfaces/vinyl-response';
 import { FindVinylDto } from './dto/find-vinyl.dto';
+import { GuestFindVinylDto } from './dto/guest-find-vinyl.dto';
 
 describe('VinylService', () => {
     let vinylService: VinylService;
@@ -171,9 +172,11 @@ describe('VinylService', () => {
                 take: 5,
                 skip: 0,
             };
-            const skip = 0;
-            const take = 5;
-            expect(await vinylService.find(take, skip)).toStrictEqual(result);
+            const testData: GuestFindVinylDto = {
+                take: 5,
+                skip: 0,
+            };
+            expect(await vinylService.find(testData)).toStrictEqual(result);
         });
     });
 
@@ -223,47 +226,47 @@ describe('VinylService', () => {
         });
 
         it('should return a vinyl response', async () => {
-          const findResult: Vinyl[] = [
-              {
-                  id: 1,
-                  name: 'test vinyl',
-                  description: 'test',
-                  authorName: 'test author',
-                  price: 10,
-                  image: 'test image',
-                  reviews: [],
-                  purchases: [],
-              },
-          ];
-          const countResult = 10;
-          jest.spyOn(vinylsRepository, 'find').mockImplementation(async () => findResult);
-          jest.spyOn(vinylsRepository, 'count').mockImplementation(async () => countResult);
+            const findResult: Vinyl[] = [
+                {
+                    id: 1,
+                    name: 'test vinyl',
+                    description: 'test',
+                    authorName: 'test author',
+                    price: 10,
+                    image: 'test image',
+                    reviews: [],
+                    purchases: [],
+                },
+            ];
+            const countResult = 10;
+            jest.spyOn(vinylsRepository, 'find').mockImplementation(async () => findResult);
+            jest.spyOn(vinylsRepository, 'count').mockImplementation(async () => countResult);
 
-          const result: VinylResponse = {
-              vinyls: [
-                  {
-                      id: 1,
-                      name: 'test vinyl',
-                      description: 'test',
-                      authorName: 'test author',
-                      price: 10,
-                      image: 'test image',
-                      reviews: [],
-                      purchases: [],
-                  },
-              ],
-              pages: 2,
-              take: 5,
-              skip: 0,
-          };
-          const testData: FindVinylDto = {
-              take: 5,
-              skip: 0,
-              sortOption: 'ASC',
-              sortParam: 'price',
-              filterString: 'test',
-          };
-          expect(await vinylService.findUniversal(testData)).toStrictEqual(result);
-      });
+            const result: VinylResponse = {
+                vinyls: [
+                    {
+                        id: 1,
+                        name: 'test vinyl',
+                        description: 'test',
+                        authorName: 'test author',
+                        price: 10,
+                        image: 'test image',
+                        reviews: [],
+                        purchases: [],
+                    },
+                ],
+                pages: 2,
+                take: 5,
+                skip: 0,
+            };
+            const testData: FindVinylDto = {
+                take: 5,
+                skip: 0,
+                sortOption: 'ASC',
+                sortParam: 'price',
+                filterString: 'test',
+            };
+            expect(await vinylService.findUniversal(testData)).toStrictEqual(result);
+        });
     });
 });
